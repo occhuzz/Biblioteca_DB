@@ -3,44 +3,70 @@
 #include<conio.h>
 #include<time.h>
 
-typedef struct login
+typedef struct
 {
+    char nombre[20];
     char usuario[20];
     char password[20];
-    struct login*sig;
-}  nodo;
+    char accion[100];
+    int tipoUsuario;
+    struct NODO_USUARIO *siguiente;
+} NODO_USUARIO;
 
-void cargarUsuarios()
+NODO_USUARIO* crearNodoUsuario(int tipo)
+{
+    NODO_USUARIO *nuevo=NULL;
+    char nombre[20];
+    char usuario[20];
+    char password[20];
+
+    nuevo=(NODO_USUARIO*)malloc(sizeof(NODO_USUARIO));
+
+    if(nuevo!= NULL)
+    {
+        printf("Ingrese el nombre del Administrador: ");
+        gets(nuevo->nombre);
+        printf("Ingrese un usuario para el Administrador: ");
+        gets(nuevo->usuario);
+        printf("Ingrese el password para el Administrador: ");
+        gets(nuevo->password);
+        nuevo->tipoUsuario = tipo;
+        nuevo->siguiente = NULL;
+    }
+    return nuevo;
+}
+
+int cargarUsuarios()
 {
     FILE* archivoUsuarios;
-    char usuario[20];
-    char password[20];
 
     if(archivoUsuarios = fopen("log_usuarios.txt","r") == NULL)
     {
         printf("No existe el archivo de usuarios\n...Creando archivo de usuarios...\n");
         archivoUsuarios = fopen("log_usuarios.txt","a+");
-        printf("Ingrese un nombre de usuario para el Administrador: ");
-        gets(usuario);
-        printf("Ingrese el password para el Administrador: ");
-        gets(password);
 
-        printf("%s\t%s",usuario,password);
+        NODO_USUARIO* nuevo = NULL;
+
+        nuevo = crearNodoUsuario(1);
+
+        fprintf(archivoUsuarios,"Nombre Admin: %s\nUser Admin: %s\nPass Admin: %s\nTipo Usuario: %d",nuevo->nombre, nuevo->usuario, nuevo->password, nuevo->tipoUsuario);
     }
     else
     {
         archivoUsuarios = fopen("log_usuarios.txt","ra+");
-
     }
     printf("Archivo de usuarios abierto");
 
     fclose(archivoUsuarios);
+
+    return 0;
 }
 
 int main()
 {
-    nodo*raiz=NULL;
-    cargarUsuarios();
+    NODO_USUARIO *cabeza=NULL;
+
+    int user = cargarUsuarios(&cabeza);
 
     return 0;
 }
