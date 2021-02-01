@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<conio.h>
 #include<time.h>
+#include<string.h>
 
 typedef struct
 {
@@ -13,23 +14,17 @@ typedef struct
     struct NODO_USUARIO *siguiente;
 } NODO_USUARIO;
 
-NODO_USUARIO* crearNodoUsuario(int tipo)
+NODO_USUARIO* crearNodoUsuario(int tipo, char nombre[20], char usuario[20], char password[20])
 {
     NODO_USUARIO *nuevo=NULL;
-    char nombre[20];
-    char usuario[20];
-    char password[20];
 
     nuevo=(NODO_USUARIO*)malloc(sizeof(NODO_USUARIO));
 
     if(nuevo!= NULL)
     {
-        printf("Ingrese el nombre del Administrador: ");
-        gets(nuevo->nombre);
-        printf("Ingrese un usuario para el Administrador: ");
-        gets(nuevo->usuario);
-        printf("Ingrese el password para el Administrador: ");
-        gets(nuevo->password);
+        strcpy(nuevo->nombre,nombre);
+        strcpy(nuevo->usuario,usuario);
+        strcpy(nuevo->password,password);
         nuevo->tipoUsuario = tipo;
         nuevo->siguiente = NULL;
     }
@@ -46,16 +41,40 @@ int cargarUsuarios()
         archivoUsuarios = fopen("log_usuarios.txt","a+");
 
         NODO_USUARIO* nuevo = NULL;
+        char nombre[20];
+        char usuario[20];
+        char password[20];
 
-        nuevo = crearNodoUsuario(1);
+        printf("Ingrese el nombre del Administrador: ");
+        gets(nombre);
+        printf("Ingrese un usuario para el Administrador: ");
+        gets(usuario);
+        printf("Ingrese el password para el Administrador: ");
+        gets(password);
 
-        fprintf(archivoUsuarios,"Nombre Admin: %s\nUser Admin: %s\nPass Admin: %s\nTipo Usuario: %d",nuevo->nombre, nuevo->usuario, nuevo->password, nuevo->tipoUsuario);
+        nuevo = crearNodoUsuario(1, nombre, usuario, password);
+
+        fprintf(archivoUsuarios,"%d %s %s %s",nuevo->tipoUsuario, nuevo->nombre, nuevo->usuario, nuevo->password);
+
+        printf("\nADMIN CARGADO DESDE CONSOLA:\nTipo: %d\nNombre: %s\nUsuario: %s\nPassword: %s",nuevo->tipoUsuario, nuevo->nombre, nuevo->usuario, nuevo->password);
     }
     else
     {
         archivoUsuarios = fopen("log_usuarios.txt","ra+");
+        printf("Archivo de usuarios abierto");
+
+        NODO_USUARIO* nuevo = NULL;
+        int tipo;
+        char nombre[20];
+        char usuario[20];
+        char password[20];
+
+        fscanf(archivoUsuarios,"%d %s %s %s", &tipo, &nombre, &usuario, &password);
+
+        nuevo = crearNodoUsuario(tipo, nombre, usuario, password);
+
+        printf("\nADMIN LEIDO DESDE TXT:\nTipo: %d\nNombre: %s\nUsuario: %s\nPassword: %s",nuevo->tipoUsuario, nuevo->nombre, nuevo->usuario, nuevo->password);
     }
-    printf("Archivo de usuarios abierto");
 
     fclose(archivoUsuarios);
 
